@@ -7,6 +7,25 @@ use Zend\Mvc\ModuleRouteListener;
 
 class Module implements AutoloaderProviderInterface
 {
+    public function getServiceConfig()
+    {
+        return array(
+            'factories' => array(
+                'SpeckCheckout\Service\Checkout' => function($sm) {
+                    $service = new Service\Checkout;
+                    $service->setOptions($sm->get('SpeckCheckout\Options\CheckoutOptions'));
+                    return $service;
+                },
+
+                'SpeckCheckout\Options\CheckoutOptions' => function($sm) {
+                    $config = $sm->get('application')->getConfig();
+                    $options = new Options\CheckoutOptions($config['speck-checkout']);
+                    return $options;
+                },
+            ),
+        );
+    }
+
     public function getAutoloaderConfig()
     {
         return array(

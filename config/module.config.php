@@ -1,8 +1,15 @@
 <?php
 return array(
+    'speck-checkout' => array(
+        'strategy' => new \SpeckCheckout\Strategy\BasicCheckoutStrategy(array(
+            new \SpeckCheckout\Strategy\Step\UserInformation
+        )),
+    ),
+
     'controllers' => array(
         'invokables' => array(
-            'checkout' => 'SpeckCheckout\Controller\CheckoutController',
+            'checkout'         => 'SpeckCheckout\Controller\CheckoutController',
+            'user-information' => 'SpeckCheckout\Controller\UserInformationController',
         ),
     ),
     'router' => array(
@@ -18,6 +25,29 @@ return array(
                 ),
                 'may_terminate' => true,
                 'child_routes' => array(
+                    'user-information' => array(
+                        'type' => 'Literal',
+                        'options' => array(
+                            'route' => '/user-info',
+                            'defaults' => array(
+                                'controller' => 'user-information',
+                                'action' => 'index',
+                            ),
+                        ),
+                    ),
+                    'default' => array(
+                        'type' => 'Segment',
+                        'priority' => -1000,
+                        'options' => array(
+                            'route' => '/[:controller[/:action]]',
+                            'constraints' => array(
+                                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                            ),
+                        ),
+                    ),
                 ),
             ),
         ),
