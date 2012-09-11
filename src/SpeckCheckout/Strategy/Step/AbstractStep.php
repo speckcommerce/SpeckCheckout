@@ -8,7 +8,18 @@ abstract class AbstractStep
 {
     protected $strategy;
 
-    abstract public function isComplete();
+    protected $complete = false;
+
+    public function setComplete($complete)
+    {
+        $this->complete = $complete;
+        return $this;
+    }
+
+    public function isComplete()
+    {
+        return $this->complete;
+    }
 
     public function getStrategy()
     {

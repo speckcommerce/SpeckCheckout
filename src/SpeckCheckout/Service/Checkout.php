@@ -7,20 +7,38 @@ use SpeckCheckout\Strategy\Step\AbstractOnSiteStep;
 
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 class Checkout implements ServiceLocatorAwareInterface
 {
     protected $options;
     protected $locator;
 
-    public function getCheckoutEntryPoint()
+    public function getCheckoutStrategy()
     {
-        $entryPoint = $this->getOptions()->getStrategy()->getFirstStep();
+        $container = new Container('speck_checkout_strategy');
 
-        if ($entryPoint instanceof AbstractOnSiteStep) {
-            return array(
-                'route' => $entryPoint->getRedirectRoute(),
-            );
+        if (isset($container->strategy)) {
+            return $container->strategy;
+        }
+
+        return $this->getOptions()->getStrategy();
+    }
+
+    public function getCheckoutCurrentStep()
+    {
+        $steps = $this->getCheckoutStrategy()->getSteps();
+
+        foreach ($steps as $step) {
+            if ($step->isComplete()) {
+                continue;
+            }
+
+            if ($step instanceof AbstractOnSiteStep) {
+                return array(
+                    'route' => $step->getRedirectRoute(),
+                );
+            }
         }
     }
 

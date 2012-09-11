@@ -13,6 +13,8 @@ class CheckoutOptions extends AbstractOptions
 
     protected $strategy;
 
+    protected $paymentMethods;
+
     public function getStrategy()
     {
         return $this->strategy;
@@ -21,6 +23,21 @@ class CheckoutOptions extends AbstractOptions
     public function setStrategy($strategy)
     {
         $this->strategy = $strategy;
+        return $this;
+    }
+
+    public function getPaymentMethods()
+    {
+        return $this->paymentMethods;
+    }
+
+    public function setPaymentMethods(array $methods)
+    {
+        foreach ($methods as $method) {
+            $obj = new $method;
+            $this->paymentMethods[$obj->getPaymentMethod()] = $obj;
+        }
+
         return $this;
     }
 }

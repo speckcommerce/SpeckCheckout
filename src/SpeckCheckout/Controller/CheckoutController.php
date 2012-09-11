@@ -11,7 +11,11 @@ class CheckoutController extends AbstractActionController
 
     public function indexAction()
     {
-        $entryPoint = $this->getCheckoutService()->getCheckoutEntryPoint();
+        $entryPoint = $this->getCheckoutService()->getCheckoutCurrentStep();
+        if ($entryPoint == null) {
+            var_dump($this->getCheckoutService()->getCheckoutStrategy());
+            return;
+        }
         return $this->redirect()->toRoute($entryPoint['route']);
     }
 

@@ -4,57 +4,59 @@ namespace SpeckCheckout\Strategy;
 
 use SpeckAddress\Entity\Address;
 use SpeckCheckout\Entity\Order;
+use Zend\Session\Container;
 use Zend\Stdlib\SplQueue;
 
 abstract class AbstractCheckoutStrategy
 {
-    /**
-     * @var Serializable
-     */
-    protected $storage = null;
-
     /**
      * @var SplQueue[Step]
      */
     protected $steps = null;
 
     /**
-     * @return Address|null
+     * @var Address
      */
-    abstract public function getShippingAddress();
+    protected $shippingAddress;
 
     /**
-     * @return Address|null
+     * @var Address
      */
-    abstract public function getBillingAddress();
+    protected $billingAddress;
 
     /**
-     * @return string|null
+     * @var string
      */
-    abstract public function getEmailAddress();
+    protected $emailAddress;
 
     /**
-     * @return string
+     * @var string
      */
-    abstract public function getPaymentMethod();
+    protected $paymentMethod;
 
     /**
-     * @return Order|null
+     * @var Order
      */
-    abstract public function getOrder();
+    protected $order;
 
     /**
-     * @return boolean
+     * @var boolean
      */
-    abstract public function isStarted();
+    protected $started = false;
 
     /**
-     * @return boolean
+     * @var boolean
      */
-    abstract public function isComplete();
+    protected $complete = false;
+
+    public function __destruct()
+    {
+        $container = new Container('speck_checkout_strategy');
+        $container->strategy = $this;
+    }
 
     /**
-     * @return SplQueue
+     * @return SplStack
      */
     public function getSteps()
     {
@@ -81,5 +83,82 @@ abstract class AbstractCheckoutStrategy
                 return $step;
             }
         }
+    }
+
+    public function getShippingAddress()
+    {
+        return $this->shippingAddress;
+    }
+
+    public function setShippingAddress($shippingAddress)
+    {
+        $this->shippingAddress = $shippingAddress;
+        return $this;
+    }
+
+    public function getBillingAddress()
+    {
+        return $this->billingAddress;
+    }
+
+    public function setBillingAddress($billingAddress)
+    {
+        $this->billingAddress = $billingAddress;
+        return $this;
+    }
+
+    public function getEmailAddress()
+    {
+        return $this->emailAddress;
+    }
+
+    public function setEmailAddress($emailAddress)
+    {
+        $this->emailAddress = $emailAddress;
+        return $this;
+    }
+
+    public function getPaymentMethod()
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod($paymentMethod)
+    {
+        $this->paymentMethod = $paymentMethod;
+        return $this;
+    }
+
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    public function setOrder($order)
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    public function getStarted()
+    {
+        return $this->started;
+    }
+
+    public function setStarted($started)
+    {
+        $this->started = $started;
+        return $this;
+    }
+
+    public function getComplete()
+    {
+        return $this->complete;
+    }
+
+    public function setComplete($complete)
+    {
+        $this->complete = $complete;
+        return $this;
     }
 }

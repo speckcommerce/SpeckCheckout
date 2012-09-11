@@ -1,1 +1,65 @@
+<?php
+echo $this->zfcUserLoginWidget(array(
+    'redirect' => ''
+));
+?>
+<hr />
+<h1>New User / Guest</h1>
+<?php
 
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('method', 'post');
+
+echo $this->form()->openTag($form);
+
+$userForm = $form->get('zfcuser');
+$shippingForm = $form->get('shipping');
+$billingForm = $form->get('billing');
+
+?>
+
+<?php foreach ($userForm as $el) : ?>
+<?php if (strpos($el->getAttribute('name'), 'country') !== false) : ?>
+    <?php $el->setAttribute('class', 'autocomplete'); ?>
+    <?php echo $this->formLabel($el) . $this->speckSelect($el) . $this->formElementErrors($el); ?>
+<?php else: ?>
+    <?php echo $this->formLabel($el) . $this->formElement($el) . $this->formElementErrors($el); ?>
+<?php endif; ?>
+<?php endforeach; ?>
+
+<h3>Shipping Address</h3>
+<?php foreach ($shippingForm as $el) : ?>
+<?php if (strpos($el->getAttribute('name'), 'country') !== false) : ?>
+    <?php $el->setAttribute('class', 'autocomplete'); ?>
+    <?php echo $this->formLabel($el) . $this->speckSelect($el) . $this->formElementErrors($el); ?>
+<?php else: ?>
+    <?php echo $this->formLabel($el) . $this->formElement($el) . $this->formElementErrors($el); ?>
+<?php endif; ?>
+<?php endforeach; ?>
+
+<h3>Billing Address</h3>
+<?php foreach ($billingForm as $el) : ?>
+<?php if (strpos($el->getAttribute('name'), 'country') !== false) : ?>
+    <?php $el->setAttribute('class', 'autocomplete'); ?>
+    <?php echo $this->formLabel($el) . $this->speckSelect($el) . $this->formElementErrors($el); ?>
+<?php else: ?>
+    <?php echo $this->formLabel($el) . $this->formElement($el) . $this->formElementErrors($el); ?>
+<?php endif; ?>
+<?php endforeach; ?>
+
+<br />
+<input type="submit" value="Submit" />
+<?= $this->form()->closeTag() ?>
+
+<script type="text/javascript">
+(function() {
+    var jQuery = $;
+    $('.autocomplete').selectToAutocomplete({
+        'relevancy-sorting': true,
+        'relevancy-sorting-booster-attr': 'weight',
+        'alternative-spellings': true,
+        'alternative-spellings-attr': 'alt-spelling'
+    });
+})();
+</script>

@@ -4,6 +4,7 @@ namespace SpeckCheckout;
 
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\Mvc\ModuleRouteListener;
+use Zend\Session\Container;
 
 class Module implements AutoloaderProviderInterface
 {

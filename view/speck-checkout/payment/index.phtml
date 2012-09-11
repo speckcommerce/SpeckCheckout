@@ -1,0 +1,16 @@
+<?php
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('method', 'get');
+$form->setAttribute('action', $this->url('checkout/payment/main'));
+
+?>
+
+<?=$this->form()->openTag($form);?>
+<?php foreach ($form as $el) : ?>
+    <h1><?=$el->getLabel()?></h1>
+    <?php echo $this->formElement($el) . $this->formElementErrors($el); ?>
+<?php endforeach; ?>
+<input type="submit" value="Continue" />
+<?=$this->form()->closeTag($form);?>

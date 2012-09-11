@@ -2,10 +2,10 @@
 
 namespace SpeckCheckout\Strategy\Step;
 
-class UserInformation extends AbstractOnSiteStep
+class PaymentInformation extends AbstractOnSiteStep
 {
     public function getRedirectRoute()
     {
-        return 'checkout/user-information';
+        return 'checkout/payment/choose';
     }
 }

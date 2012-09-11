@@ -1,0 +1,16 @@
+<?php
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('method', 'post');
+$url = $this->url('checkout/payment/main/query', array('method'=>$this->paymentMethod));
+$form->setAttribute('action', $this->url('checkout/payment/main') . '?method=' . $this->method);
+
+?>
+
+<?=$this->form()->openTag($form);?>
+<?php foreach ($form as $el) : ?>
+    <?php echo $this->formLabel($el) . $this->formElement($el) . $this->formElementErrors($el); ?>
+<?php endforeach; ?><br />
+<input type="submit" value="Continue" />
+<?=$this->form()->closeTag($form);?>
