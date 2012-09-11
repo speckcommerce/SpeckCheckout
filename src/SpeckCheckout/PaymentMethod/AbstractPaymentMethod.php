@@ -7,6 +7,7 @@ abstract class AbstractPaymentMethod
     protected $paymentMethod;
     protected $displayName;
     protected $data;
+    protected $viewPartialName;
 
     abstract public function getActionResponse($controller);
 
@@ -40,6 +41,17 @@ abstract class AbstractPaymentMethod
     public function setData($data)
     {
         $this->data = $data;
+        return $this;
+    }
+
+    public function getViewPartialName()
+    {
+        return $this->viewPartialName;
+    }
+
+    public function setViewPartialName($viewPartialName)
+    {
+        $this->viewPartialName = $viewPartialName;
         return $this;
     }
 }

@@ -4,13 +4,14 @@ return array(
         'strategy' => new \SpeckCheckout\Strategy\BasicCheckoutStrategy(array(
             new \SpeckCheckout\Strategy\Step\UserInformation,
             new \SpeckCheckout\Strategy\Step\PaymentInformation,
+            new \SpeckCheckout\Strategy\Step\OrderReview,
         )),
         'payment_methods' => array(
-            'SpeckCheckout\PaymentMethod\Check',
-            'SpeckCheckout\PaymentMethod\Fax',
-            'SpeckCheckout\PaymentMethod\Phone',
-            'SpeckCheckout\PaymentMethod\PO',
-            'SpeckCheckout\PaymentMethod\Quote',
+            'check' => 'SpeckCheckout\PaymentMethod\Check',
+            'fax'   => 'SpeckCheckout\PaymentMethod\Fax',
+            'phone' => 'SpeckCheckout\PaymentMethod\Phone',
+            'po'    => 'SpeckCheckout\PaymentMethod\PO',
+            'quote' => 'SpeckCheckout\PaymentMethod\Quote',
         ),
     ),
 
@@ -19,6 +20,7 @@ return array(
             'checkout'         => 'SpeckCheckout\Controller\CheckoutController',
             'payment'          => 'SpeckCheckout\Controller\PaymentController',
             'user-information' => 'SpeckCheckout\Controller\UserInformationController',
+            'order-review'     => 'SpeckCheckout\Controller\OrderReviewController',
         ),
     ),
     'router' => array(
@@ -41,6 +43,25 @@ return array(
                             'defaults' => array(
                                 'controller' => 'user-information',
                                 'action' => 'index',
+                            ),
+                        ),
+                    ),
+                    'order' => array(
+                        'type' => 'Literal',
+                        'may_terminate' => false,
+                        'options' => array(
+                            'route' => '/order',
+                        ),
+                        'child_routes' => array(
+                            'review' => array(
+                                'type' => 'Literal',
+                                'options' => array(
+                                    'route' => '/review',
+                                    'defaults' => array(
+                                        'controller' => 'order-review',
+                                        'action' => 'index',
+                                    ),
+                                ),
                             ),
                         ),
                     ),

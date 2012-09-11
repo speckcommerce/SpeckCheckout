@@ -11,6 +11,9 @@ class CheckoutController extends AbstractActionController
 
     public function indexAction()
     {
+        $strategy = $this->getCheckoutService()->getCheckoutStrategy();
+        $strategy->setStarted(true);
+
         $entryPoint = $this->getCheckoutService()->getCheckoutCurrentStep();
         if ($entryPoint == null) {
             var_dump($this->getCheckoutService()->getCheckoutStrategy());
@@ -35,6 +38,7 @@ class CheckoutController extends AbstractActionController
         ));
 
         $cartsvc->addItemToCart($item);
+        die();
     }
 
     public function getCheckoutService()

@@ -11,6 +11,7 @@ class Phone extends AbstractOnSitePaymentMethod
 {
     protected $paymentMethod = 'phone';
     protected $displayName = 'Phone';
+    protected $viewPartialName = 'speck-checkout/payment/partial/phone';
 
     public function getForm()
     {

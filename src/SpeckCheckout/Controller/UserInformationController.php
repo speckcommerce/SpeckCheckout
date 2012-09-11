@@ -6,6 +6,7 @@ use SpeckCheckout\Strategy\Step\UserInformation;
 
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Stdlib\Parameters;
 use Zend\View\Model\ViewModel;
 
 class UserInformationController extends AbstractActionController
@@ -43,8 +44,7 @@ class UserInformationController extends AbstractActionController
             );
         }
 
-        //$user = $this->getServiceLocator()->get('zfcuser_user_service')->register($zfcuser->getData());
-        $user = $this->getServiceLocator()->get('zfcuser_user_service')->getUserMapper()->findById(7);
+        $user = $this->getServiceLocator()->get('zfcuser_user_service')->register($zfcuser->getData());
 
         // TODO
         $contact = array('name' => 'TODO', 'display_name' => 'TODO');
@@ -69,7 +69,17 @@ class UserInformationController extends AbstractActionController
             }
         }
 
-        return $this->redirect()->toRoute('checkout');
+        $initialPost = $this->getRequest()->getPost();
+
+        $post['identity'] = $user->getEmail();
+        $post['credential'] = $initialPost['zfcuser']['password'];
+        $post['redirect'] = $this->url()->fromRoute('checkout');
+
+        $this->getRequest()->setPost(new Parameters($post));
+
+        return $this->forward()->dispatch('zfcuser', array(
+            'action'   => 'authenticate',
+        ));
     }
 
     public function getRegisterForm()

@@ -1,0 +1,51 @@
+<h2>Cart Contents</h2>
+<?=$this->partial('speck-cart/cart/index', $this->vars());?>
+
+<h2>Shipping Address</h2>
+<?php
+$address = $this->checkout->getShippingAddress();
+
+$params = http_build_query(array(
+    'markers' => '|' . $address->getStreetAddress() . ' ' . $address->getCity() . ', ' . $address->getProvince(),
+    'sensor' => 'false',
+    'size' => '150x150'
+));
+
+$imgurl = "http://maps.googleapis.com/maps/api/staticmap?" . $params;
+
+?>
+<div style="float: left; margin-right: 10px;">
+    <img src="<?=$imgurl?>" />
+</div>
+<p><em><?=$address->getName()?></em><br />
+<?=$address->getStreetAddress()?><br />
+<?=$address->getCity()?>, <?=$address->getProvince()?> <?=$address->getPostalCode()?><br />
+<?=$address->getCountry()?></p>
+<p style="clear: both"></p>
+
+<h2>Billing Address</h2>
+<?php
+$address = $this->checkout->getBillingAddress();
+
+$params = http_build_query(array(
+    'markers' => '|' . $address->getStreetAddress() . ' ' . $address->getCity() . ', ' . $address->getProvince(),
+    'sensor' => 'false',
+    'size' => '150x150'
+));
+
+$imgurl = "http://maps.googleapis.com/maps/api/staticmap?" . $params;
+
+?>
+<div style="float: left; margin-right: 10px;">
+    <img src="<?=$imgurl?>" />
+</div>
+<p><em><?=$address->getName()?></em><br />
+<?=$address->getStreetAddress()?><br />
+<?=$address->getCity()?>, <?=$address->getProvince()?> <?=$address->getPostalCode()?><br />
+<?=$address->getCountry()?></p>
+<p style="clear: both"></p>
+
+<h2>Payment Information</h2>
+<?=$this->partial($this->checkout->getPaymentMethod()->getViewPartialName(), array(
+    'method' => $this->checkout->getPaymentMethod()
+))?>
