@@ -141,22 +141,20 @@ class UserInformationController extends AbstractActionController
             );
         }
 
-        $userContactService = $this->getServiceLocator()->get('SpeckUserContact\Service\UserContact');
-        $contactService = $this->getServiceLocator()->get('SpeckContact\Service\ContactService');
         $addressService = $this->getServiceLocator()->get('SpeckAddress\Service\Address');
+        $userAddressService = $this->getServiceLocator()->get('SpeckUserAddress\Service\UserAddress');
         $checkoutService = $this->getServiceLocator()->get('SpeckCheckout\Service\Checkout');
 
         $user = $this->zfcUserAuthentication()->getIdentity();
-        $contact = $userContactService->findByUserId($user->getId());
 
         if ($shippingAddressId == 0) {
-            $ship = $contactService->createAddress($shipping->getData(), $contact->getContactId());
+            $ship = $userAddressService->create($shipping->getData());
         } else {
             $ship = $addressService->findById($shippingAddressId);
         }
 
         if ($billingAddressId == 0) {
-            $bill = $contactService->createAddress($billing->getData(), $contact->getContactId());
+            $bill = $userAddressService->create($billing->getData());
         } else {
             $bill = $addressService->findById($billingAddressId);
         }
