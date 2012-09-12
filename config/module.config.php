@@ -38,11 +38,23 @@ return array(
                 'child_routes' => array(
                     'user-information' => array(
                         'type' => 'Literal',
+                        'may_terminate' => true,
                         'options' => array(
                             'route' => '/user-info',
                             'defaults' => array(
                                 'controller' => 'user-information',
                                 'action' => 'index',
+                            ),
+                        ),
+                        'child_routes' => array(
+                            'addresses' => array(
+                                'type' => 'Literal',
+                                'options' => array(
+                                    'route' => '/address',
+                                    'defaults' => array(
+                                        'action' => 'pick-addresses',
+                                    ),
+                                ),
                             ),
                         ),
                     ),
@@ -100,16 +112,6 @@ return array(
                                         'action' => 'index',
                                     ),
                                 ),
-                            ),
-                        ),
-                    ),
-                    'pay' => array(
-                        'type' => 'Literal',
-                        'options' => array(
-                            'route' => '/pay',
-                            'defaults' => array(
-                                'controller' => 'payment',
-                                'action' => 'payment',
                             ),
                         ),
                     ),

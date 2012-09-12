@@ -15,22 +15,22 @@ class UserInformationController extends AbstractActionController
     {
         $form = $this->getRegisterForm();
 
-        //$prg = $this->prg('checkout/user-information');
-        //if ($prg instanceof Response) {
-        //    //return $prg;
-        //} else if ($prg === false) {
-        //    return array(
-        //        'form' => $form,
-        //    );
-        //}
+        $prg = $this->prg('checkout/user-information');
+        if ($prg instanceof Response) {
+            return $prg;
+        } else if ($prg === false) {
+            return array(
+                'form' => $form,
+            );
+        }
 
         if (!$this->getRequest()->isPost()) {
              return array('form' => $form);
         }
 
-        $zfcuser  = $form->get('zfcuser')->setData($_POST['zfcuser']);
-        $shipping = $form->get('shipping')->setData($_POST['shipping']);
-        $billing  = $form->get('billing')->setData($_POST['billing']);
+        $zfcuser  = $form->get('zfcuser')->setData($prg['zfcuser']);
+        $shipping = $form->get('shipping')->setData($prg['shipping']);
+        $billing  = $form->get('billing')->setData($prg['billing']);
 
         $valid1 = $zfcuser->isValid();
         $valid2 = $shipping->isValid();
@@ -80,6 +80,100 @@ class UserInformationController extends AbstractActionController
         return $this->forward()->dispatch('zfcuser', array(
             'action'   => 'authenticate',
         ));
+    }
+
+    public function pickAddressesAction()
+    {
+        $userAddressService = $this->getServiceLocator()->get('SpeckUserAddress\Service\UserAddress');
+
+        $prg = $this->prg('checkout/user-information/addresses');
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+
+        $addresses = $userAddressService->getAddresses()->toArray();
+
+        $addressesArray = array();
+        foreach ($addresses as $a) {
+            $addressesArray[$a['address_id']] = $a;
+        }
+
+        $shippingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
+        $shippingAddressForm->setName('shipping')
+            ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
+
+        $billingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
+        $billingAddressForm->setName('billing')
+            ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
+
+        $form = new \Zend\Form\Form;
+
+        $form->add($shippingAddressForm)
+            ->add($billingAddressForm);
+
+        if ($prg === false) {
+            return array(
+                'addresses' => $addressesArray,
+                'form'      => $form,
+            );
+        }
+
+        $shippingAddressId = isset($prg['shipping_address_id']) ? $prg['shipping_address_id'] : 0;
+        $billingAddressId = isset($prg['billing_address_id']) ? $prg['billing_address_id'] : 0;
+
+        $shipping = $form->get('shipping');
+        $billing = $form->get('billing');
+
+        $shipping->setData(isset($prg['shipping']) ? $prg['shipping'] : array());
+        $billing->setData(isset($prg['billing']) ? $prg['billing'] : array());
+
+        $valid1 = ($shippingAddressId != 0) ? true : $shipping->isValid();
+        $valid2 = ($billingAddressId != 0) ? true : $billing->isValid();
+
+        $valid = $valid1 && $valid2;
+
+        if (!$valid) {
+            return array(
+                'ship_prefill' => $shippingAddressId,
+                'bill_prefill' => $billingAddressId,
+                'addresses' => $addressesArray,
+                'form'      => $form,
+            );
+        }
+
+        $userContactService = $this->getServiceLocator()->get('SpeckUserContact\Service\UserContact');
+        $contactService = $this->getServiceLocator()->get('SpeckContact\Service\ContactService');
+        $addressService = $this->getServiceLocator()->get('SpeckAddress\Service\Address');
+        $checkoutService = $this->getServiceLocator()->get('SpeckCheckout\Service\Checkout');
+
+        $user = $this->zfcUserAuthentication()->getIdentity();
+        $contact = $userContactService->findByUserId($user->getId());
+
+        if ($shippingAddressId == 0) {
+            $ship = $contactService->createAddress($shipping->getData(), $contact->getContactId());
+        } else {
+            $ship = $addressService->findById($shippingAddressId);
+        }
+
+        if ($billingAddressId == 0) {
+            $bill = $contactService->createAddress($billing->getData(), $contact->getContactId());
+        } else {
+            $bill = $addressService->findById($billingAddressId);
+        }
+
+        $strategy = $checkoutService->getCheckoutStrategy();
+        $strategy->setShippingAddress($ship);
+        $strategy->setBillingAddress($bill);
+        $strategy->setEmailAddress($user->getEmail());
+
+        foreach ($strategy->getSteps() as $step) {
+            if ($step instanceof UserInformation) {
+                $step->setComplete(true);
+                break;
+            }
+        }
+
+        return $this->redirect()->toRoute('checkout');
     }
 
     public function getRegisterForm()

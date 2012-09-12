@@ -29,8 +29,8 @@ $address = $this->checkout->getBillingAddress();
 
 $params = http_build_query(array(
     'markers' => '|' . $address->getStreetAddress() . ' ' . $address->getCity() . ', ' . $address->getProvince(),
-    'sensor' => 'false',
-    'size' => '150x150'
+    'sensor'  => 'false',
+    'size'    => '150x150'
 ));
 
 $imgurl = "http://maps.googleapis.com/maps/api/staticmap?" . $params;

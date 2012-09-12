@@ -1,0 +1,151 @@
+<script type="text/javascript">
+
+var addresses = <?=json_encode($this->addresses)?>;
+
+var selectToAutoComplete = function() {
+    var jQuery = $;
+    $('.autocomplete').selectToAutocomplete({
+        'relevancy-sorting': true,
+        'relevancy-sorting-booster-attr': 'weight',
+        'alternative-spellings': true,
+        'alternative-spellings-attr': 'alt-spelling'
+    });
+}
+
+var updateShippingForm = function() {
+    var val = $('#shipping_address_id :selected').val();
+
+    if (val == 0) {
+        $('#shipping-form :disabled').removeAttr('disabled');
+
+        $('input[name="shipping[name]"]').val('');
+        $('textarea[name="shipping[street_address]"]').val('');
+        $('input[name="shipping[city]"]').val('');
+        $('input[name="shipping[province]"]').val('');
+        $('input[name="shipping[postal_code]"]').val('');
+        $('select[name="shipping[country]"] option').removeAttr('selected');
+
+        $('select[name="shipping[country]"]').next().val('');
+    } else {
+        var address = addresses[val];
+
+        $('input[name="shipping[name]"]').val(address.name);
+        $('textarea[name="shipping[street_address]"]').val(address.street_address);
+        $('input[name="shipping[city]"]').val(address.city);
+        $('input[name="shipping[province]"]').val(address.province);
+        $('input[name="shipping[postal_code]"]').val(address.postal_code);
+        $('select[name="shipping[country]"] option').filter(function() {
+            if ($(this).val() == address.country) {
+                $(this).attr('selected', true);
+            }
+        });
+
+        $('select[name="shipping[country]"]').next().val(
+            $('select[name="shipping[country]"] option:selected').text()
+        );
+
+        $('#shipping-form :enabled').attr('disabled','disabled');
+    }
+};
+
+var updateBillingForm = function() {
+    var val = $('#billing_address_id :selected').val();
+
+    if (val == 0) {
+        $('#billing-form :disabled').removeAttr('disabled');
+
+        $('input[name="billing[name]"]').val('');
+        $('textarea[name="billing[street_address]"]').val('');
+        $('input[name="billing[city]"]').val('');
+        $('input[name="billing[province]"]').val('');
+        $('input[name="billing[postal_code]"]').val('');
+        $('select[name="billing[country]"] option').removeAttr('selected');
+
+        $('select[name="billing[country]"]').next().val('');
+    } else {
+        var address = addresses[val];
+
+        $('input[name="billing[name]"]').val(address.name);
+        $('textarea[name="billing[street_address]"]').val(address.street_address);
+        $('input[name="billing[city]"]').val(address.city);
+        $('input[name="billing[province]"]').val(address.province);
+        $('input[name="billing[postal_code]"]').val(address.postal_code);
+        $('select[name="billing[country]"] option').filter(function() {
+            if ($(this).val() == address.country) {
+                $(this).attr('selected', true);
+            }
+        });
+
+        $('select[name="billing[country]"]').next().val(
+            $('select[name="billing[country]"] option:selected').text()
+        );
+
+        $('#billing-form :enabled').attr('disabled','disabled');
+    }
+};
+
+$(document).ready(function() {
+    updateShippingForm();
+    updateBillingForm();
+});
+
+</script>
+<?php
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('method', 'post');
+
+echo $this->form()->openTag($form);
+
+$shippingForm = $form->get('shipping');
+$billingForm = $form->get('billing');
+
+$addressOptions = array('0' => '- Create New Address -');
+foreach ($this->addresses as $a) {
+    $addressOptions[$a['address_id']] = $a['name'];
+}
+
+?>
+<h3>Shipping Address</h3>
+<select id="shipping_address_id" name="shipping_address_id" onchange="javascript:updateShippingForm();">
+<?php foreach ($addressOptions as $value => $label) : ?>
+    <option value="<?=$value?>"<?=(($value==$this->ship_prefill)?' selected':'')?>><?=$label?></option>
+<?php endforeach; ?>
+</select>
+<div id="shipping-form">
+<?php foreach ($shippingForm as $el) : ?>
+<?php if (strpos($el->getAttribute('name'), 'country') !== false) : ?>
+    <?php $el->setAttribute('class', 'autocomplete'); ?>
+    <?php echo $this->formLabel($el) . $this->speckSelect($el) . $this->formElementErrors($el); ?>
+<?php else: ?>
+    <?php echo $this->formLabel($el) . $this->formElement($el) . $this->formElementErrors($el); ?>
+<?php endif; ?>
+<?php endforeach; ?>
+</div>
+
+<h3>Billing Address</h3>
+<select id="billing_address_id" name="billing_address_id" onchange="javascript:updateBillingForm();">
+<?php foreach ($addressOptions as $value => $label) : ?>
+    <option value="<?=$value?>"<?=(($value==$this->bill_prefill)?' selected':'')?>><?=$label?></option>
+<?php endforeach; ?>
+</select>
+<div id="billing-form">
+<?php foreach ($billingForm as $el) : ?>
+<?php if (strpos($el->getAttribute('name'), 'country') !== false) : ?>
+    <?php $el->setAttribute('class', 'autocomplete'); ?>
+    <?php echo $this->formLabel($el) . $this->speckSelect($el) . $this->formElementErrors($el); ?>
+<?php else: ?>
+    <?php echo $this->formLabel($el) . $this->formElement($el) . $this->formElementErrors($el); ?>
+<?php endif; ?>
+<?php endforeach; ?>
+<br />
+</div>
+<input type="submit" value="Continue" />
+<?= $this->form()->closeTag() ?>
+
+<script type="text/javascript">
+(function() {
+    selectToAutoComplete();
+})();
+</script>
