@@ -24,10 +24,6 @@ class UserInformationController extends AbstractActionController
             );
         }
 
-        if (!$this->getRequest()->isPost()) {
-             return array('form' => $form);
-        }
-
         $zfcuser  = $form->get('zfcuser')->setData($prg['zfcuser']);
         $shipping = $form->get('shipping')->setData($prg['shipping']);
         $billing  = $form->get('billing')->setData($prg['billing']);
@@ -46,15 +42,10 @@ class UserInformationController extends AbstractActionController
 
         $user = $this->getServiceLocator()->get('zfcuser_user_service')->register($zfcuser->getData());
 
-        // TODO
-        $contact = array('name' => 'TODO', 'display_name' => 'TODO');
-        $contactService = $this->getServiceLocator()->get('SpeckContact\Service\ContactService');
-        $contact = $contactService->createContact($contact);
-        $ship = $contactService->createAddress($shipping->getData(), $contact->getContactId());
-        $bill = $contactService->createAddress($billing->getData(), $contact->getContactId());
-
-        $userContactService = $this->getServiceLocator()->get('SpeckUserContact\Service\UserContact');
-        $userContactService->link($user->getId(), $contact->getContactId());
+        // TODO: contact name
+        $userAddressService = $this->getServiceLocator()->get('SpeckUserAddress\Service\UserAddress');
+        $ship = $userAddressService->create($shipping->getData(), $user->getId());
+        $bill = $userAddressService->create($billing->getData(), $user->getId());
 
         $checkoutService = $this->getServiceLocator()->get('SpeckCheckout\Service\Checkout');
         $strategy = $checkoutService->getCheckoutStrategy();
@@ -69,10 +60,8 @@ class UserInformationController extends AbstractActionController
             }
         }
 
-        $initialPost = $this->getRequest()->getPost();
-
         $post['identity'] = $user->getEmail();
-        $post['credential'] = $initialPost['zfcuser']['password'];
+        $post['credential'] = $prg['zfcuser']['password'];
         $post['redirect'] = $this->url()->fromRoute('checkout');
 
         $this->getRequest()->setPost(new Parameters($post));
