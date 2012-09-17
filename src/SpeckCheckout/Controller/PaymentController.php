@@ -41,14 +41,10 @@ class PaymentController extends AbstractActionController
         $request         = $this->getRequest();
 
         $paymentMethod = null;
-        foreach ($paymentMethods as $name => $method) {
-            if ($name === $request->getQuery()->get('method')) {
-                $paymentMethod = $method;
-                break;
-            }
-        }
-
-        if (!$paymentMethod) {
+        $method = ($request->getQuery()->get('method') ?: $request->getPost()->get('method'));
+        if($method && array_key_exists($method, $paymentMethods)) {
+            $paymentMethod = $paymentMethods[$method];
+        }else{
             throw new \Exception('Invalid payment method');
         }
 
