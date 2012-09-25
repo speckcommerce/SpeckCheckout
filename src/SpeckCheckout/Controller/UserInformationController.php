@@ -104,10 +104,15 @@ class UserInformationController extends AbstractActionController
         $form->add($shippingAddressForm)
             ->add($billingAddressForm);
 
+        $checkoutService = $this->getServiceLocator()->get('SpeckCheckout\Service\Checkout');
+
         if ($prg === false) {
+            $strategy = $checkoutService->getCheckoutStrategy();
             return array(
-                'addresses' => $addressesArray,
-                'form'      => $form,
+                'addresses'    => $addressesArray,
+                'form'         => $form,
+                'ship_prefill' => $strategy->getShippingAddress()->getAddressId(),
+                'bill_prefill' => $strategy->getBillingAddress()->getAddressId(),
             );
         }
 
@@ -136,7 +141,6 @@ class UserInformationController extends AbstractActionController
 
         $addressService = $this->getServiceLocator()->get('SpeckAddress\Service\Address');
         $userAddressService = $this->getServiceLocator()->get('SpeckUserAddress\Service\UserAddress');
-        $checkoutService = $this->getServiceLocator()->get('SpeckCheckout\Service\Checkout');
 
         $user = $this->zfcUserAuthentication()->getIdentity();
 
