@@ -13,6 +13,10 @@ class UserInformationController extends AbstractActionController
 {
     public function indexAction()
     {
+        if ($this->zfcuserauthentication()->hasIdentity()) {
+            return $this->redirect()->toRoute('checkout/user-information/addresses');
+        }
+
         $form = $this->getRegisterForm();
 
         $prg = $this->prg('checkout/user-information');
