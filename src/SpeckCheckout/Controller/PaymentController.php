@@ -29,6 +29,10 @@ class PaymentController extends AbstractActionController
                 'value_options' => $valueOptions,
             ),
         ));
+        $paymentMethod = $checkoutService->getCheckoutStrategy()->getPaymentMethod();
+        if ($paymentMethod) {
+            $methodForm->get('method')->setValue($paymentMethod->getPaymentMethod());
+        }
 
         return array('form' => $methodForm);
     }
