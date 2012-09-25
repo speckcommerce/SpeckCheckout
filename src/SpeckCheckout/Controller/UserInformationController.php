@@ -108,12 +108,17 @@ class UserInformationController extends AbstractActionController
 
         if ($prg === false) {
             $strategy = $checkoutService->getCheckoutStrategy();
-            return array(
+            $return = array(
                 'addresses'    => $addressesArray,
                 'form'         => $form,
-                'ship_prefill' => $strategy->getShippingAddress()->getAddressId(),
-                'bill_prefill' => $strategy->getBillingAddress()->getAddressId(),
             );
+            if ($strategy->getShippingAddress()) {
+                $return['ship_prefill'] = $strategy->getShippingAddress()->getAddressId();
+            }
+            if ($strategy->getBillingAddress()) {
+                $return['bill_prefill'] = $strategy->getBillingAddress()->getAddressId();
+            }
+            return $return;
         }
 
         $shippingAddressId = isset($prg['shipping_address_id']) ? $prg['shipping_address_id'] : 0;
