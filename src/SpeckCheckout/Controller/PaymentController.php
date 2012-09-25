@@ -16,9 +16,16 @@ class PaymentController extends AbstractActionController
         $options         = $checkoutService->getOptions();
         $paymentMethods  = $options->getPaymentMethods();
 
+        $paymentMethod = $checkoutService->getCheckoutStrategy()->getPaymentMethod();
+        $methodString = ($paymentMethod ? $paymentMethod->getPaymentMethod() : null );
+
         $methodForm = new \Zend\Form\Form;
         foreach ($paymentMethods as $i) {
-            $valueOptions[$i->getPaymentMethod()] = $i->getDisplayName();
+            $valueOptions[$i->getPaymentMethod()] = array(
+                'value'    => $i->getPaymentMethod(),
+                'label'    => $i->getDisplayName(),
+                'selected' => ($i->getPaymentMethod() === $methodString),
+            );
         }
 
         $methodForm->add(array(
@@ -29,10 +36,6 @@ class PaymentController extends AbstractActionController
                 'value_options' => $valueOptions,
             ),
         ));
-        $paymentMethod = $checkoutService->getCheckoutStrategy()->getPaymentMethod();
-        if ($paymentMethod) {
-            $methodForm->get('method')->setValue($paymentMethod->getPaymentMethod());
-        }
 
         return array('form' => $methodForm);
     }
