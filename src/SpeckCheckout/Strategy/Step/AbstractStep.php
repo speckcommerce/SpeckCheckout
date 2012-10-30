@@ -31,4 +31,9 @@ abstract class AbstractStep
         $this->strategy = $strategy;
         return $this;
     }
+
+    public function __sleep()
+    {
+        return array('complete');
+    }
 }
