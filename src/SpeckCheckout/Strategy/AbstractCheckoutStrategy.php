@@ -55,6 +55,14 @@ abstract class AbstractCheckoutStrategy
         $container->strategy = $this;
     }
 
+    public function __wakeup()
+    {
+        foreach($this->steps as $step) {
+            $step->setStrategy($this);
+        }
+    }
+
+
     /**
      * @return SplStack
      */
