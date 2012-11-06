@@ -1,0 +1,21 @@
+{
+    "name": "speckcommerce/speck-checkout",
+    "description": "",
+    "type": "library",
+    "keywords": [
+        "zf2"
+    ],
+    "homepage": "http://github.com/speckcommerce/SpeckCheckout",
+    "authors": [
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-0": {
+            "SpeckCheckout": "src/",
+        },
+        "classmap": [
+            "./"
+        ]
+    }
+}
