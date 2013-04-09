@@ -3,7 +3,6 @@
 $form = $this->form;
 $form->prepare();
 $form->setAttribute('method', 'post');
-$url = $this->url('checkout/payment/main/query', array('method'=>$this->paymentMethod));
 $form->setAttribute('action', $this->url('checkout/payment/main') . '?method=' . $this->method);
 
 ?>

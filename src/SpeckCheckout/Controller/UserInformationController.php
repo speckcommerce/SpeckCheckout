@@ -20,6 +20,7 @@ class UserInformationController extends AbstractActionController
         $form = $this->getRegisterForm();
 
         $prg = $this->prg('checkout/user-information');
+
         if ($prg instanceof Response) {
             return $prg;
         } else if ($prg === false) {
@@ -43,7 +44,6 @@ class UserInformationController extends AbstractActionController
                 'form' => $form,
             );
         }
-
         $user = $this->getServiceLocator()->get('zfcuser_user_service')->register($zfcuser->getData());
 
         // TODO: contact name

@@ -5,6 +5,7 @@ return array(
             new \SpeckCheckout\Strategy\Step\UserInformation,
             new \SpeckCheckout\Strategy\Step\PaymentInformation,
             new \SpeckCheckout\Strategy\Step\OrderReview,
+            new \SpeckCheckout\Strategy\Step\ProcessOrder,
         )),
         'payment_methods' => array(
             'check' => 'SpeckCheckout\PaymentMethod\Check',
@@ -97,11 +98,11 @@ return array(
                                         'action' => 'payment',
                                     ),
                                 ),
-                                'child_routes' => array(
-                                    'query' => array(
-                                        'type' => 'Query',
-                                    ),
-                                ),
+                                //'child_routes' => array(
+                                //    'query' => array(
+                                //        'type' => 'Query',
+                                //    ),
+                                //),
                             ),
                             'choose' => array(
                                 'type' => 'Literal',

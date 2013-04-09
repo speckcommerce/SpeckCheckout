@@ -35,7 +35,7 @@ class PO extends AbstractOnSitePaymentMethod
 
         $form = $this->getForm();
 
-        $url = $controller->url()->fromRoute('checkout/payment/main/query', array('method'=>$this->paymentMethod));
+        $url = $controller->url()->fromRoute('checkout/payment/main') . '?method=' . $this->paymentMethod;
         $prg = $controller->prg($url, true);
 
         if ($prg instanceof Response) {
