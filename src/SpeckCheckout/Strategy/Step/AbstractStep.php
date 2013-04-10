@@ -12,6 +12,10 @@ abstract class AbstractStep
 
     public function setComplete($complete)
     {
+        // these 2 lines are REALLY hacky, figure out whats going on with multisite + this module
+        $this->__sleep();
+        $this->getStrategy()->__destruct();
+
         $this->complete = $complete;
         return $this;
     }
