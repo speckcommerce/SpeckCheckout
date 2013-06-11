@@ -51,7 +51,7 @@ abstract class AbstractStep
     public function getEventManager()
     {
         if (null === $this->getEventManager()) {
-            $this->eventManager = $this->getStrategy()->getServiceLocator()->get('EventManager'); //pseudo
+            $this->eventManager = $this->getStrategy()->getServiceLocator()->get('EventManager');
         }
 
         return $this->eventManager;

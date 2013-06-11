@@ -11,6 +11,36 @@ use Zend\View\Model\ViewModel;
 
 class UserInformationController extends AbstractActionController
 {
+
+    public function validatePrgSegmentForm($segmentName, $infoForm, array $prg)
+    {
+        $form  = $infoForm->get($segmentName)->setData($prg->get($segmentName));
+        $valid = $form->isValid();
+
+        $eventData = array(
+            'prg'   => $prg,
+            'form'  => $form,
+            'valid' => $valid
+        );
+        $response = $this->getEventManager()->trigger(__FUNCTION__, $this, $eventData);
+        $data = $response[0];
+
+        $form  = isset($data['form'])  ? $data['form']  : $form;
+        $prg   = isset($data['prg'])   ? $data['prg']   : $prg;
+        $valid = isset($data['valid']) ? $data['valid'] : $valid;
+
+        return array(
+            'valid' => $valid,
+            'form'  => $form,
+            'prg'   => $prg
+        );
+    }
+
+    public function getEventManager()
+    {
+        return $this->getServiceLocator()->get('EventManager');
+    }
+
     public function indexAction()
     {
         if ($this->zfcuserauthentication()->hasIdentity()) {
@@ -28,13 +58,20 @@ class UserInformationController extends AbstractActionController
             );
         }
 
-        $zfcuser  = $form->get('zfcuser')->setData($prg['zfcuser']);
-        $shipping = $form->get('shipping')->setData($prg['shipping']);
-        $billing  = $form->get('billing')->setData($prg['billing']);
+        $result   = $this->validatePrgSegmentForm('shipping', $form, $prg);
+        $prg      = $result['prg'];
+        $valid1   = $result['valid'];
+        $shipping = $result['form'];
 
-        $valid1 = $zfcuser->isValid();
-        $valid2 = $shipping->isValid();
-        $valid3 = $billing->isValid();
+        $result   = $this->validatePrgSegmentForm('billing', $form, $prg);
+        $prg      = $result['prg'];
+        $valid2   = $result['valid'];
+        $billing  = $result['form'];
+
+        $result   = $this->validatePrgSegmentForm('user', $form, $prg);
+        $prg      = $result['prg'];
+        $valid3   = $result['valid'];
+        $zfcuser  = $result['form'];
 
         $valid = $valid1 && $valid2 && $valid3;
 
@@ -183,11 +220,11 @@ class UserInformationController extends AbstractActionController
         $userForm->remove('submit');
 
         $shippingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
-        $shippingAddressForm->setName('shipping')
+        $shippingAddressForm->setName('shipping')->setWrapElements(true)
             ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
 
         $billingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
-        $billingAddressForm->setName('billing')
+        $billingAddressForm->setName('billing')->setWrapElements(true)
             ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
 
         $form = new \Zend\Form\Form;
