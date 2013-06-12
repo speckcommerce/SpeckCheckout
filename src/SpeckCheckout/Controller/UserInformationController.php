@@ -14,7 +14,8 @@ class UserInformationController extends AbstractActionController
 
     public function validatePrgSegmentForm($segmentName, $infoForm, array $prg)
     {
-        $form  = $infoForm->get($segmentName)->setData($prg->get($segmentName));
+        $segmentData = $prg[$segmentName];
+        $form  = $infoForm->get($segmentName)->setData($segmentData);
         $valid = $form->isValid();
 
         $eventData = array(
@@ -22,8 +23,10 @@ class UserInformationController extends AbstractActionController
             'form'  => $form,
             'valid' => $valid
         );
-        $response = $this->getEventManager()->trigger(__FUNCTION__, $this, $eventData);
-        $data = $response[0];
+        $response = $this->getEventManager()->trigger(
+            __FUNCTION__ . '.validate.' . $segmentName, $this, $eventData
+        );
+        $data = isset($response[0]) ? $response[0] : array();
 
         $form  = isset($data['form'])  ? $data['form']  : $form;
         $prg   = isset($data['prg'])   ? $data['prg']   : $prg;
@@ -34,11 +37,6 @@ class UserInformationController extends AbstractActionController
             'form'  => $form,
             'prg'   => $prg
         );
-    }
-
-    public function getEventManager()
-    {
-        return $this->getServiceLocator()->get('EventManager');
     }
 
     public function indexAction()
@@ -216,7 +214,7 @@ class UserInformationController extends AbstractActionController
     public function getRegisterForm()
     {
         $userForm = $this->getServiceLocator()->get('zfcuser_register_form');
-        $userForm->setName('zfcuser');
+        $userForm->setName('zfcuser')->setWrapElements(true);
         $userForm->remove('submit');
 
         $shippingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
