@@ -31,6 +31,7 @@ class CheckoutOptions extends AbstractOptions
         return $this->paymentMethods;
     }
 
+    //todo: refactor to pluginmanager
     public function setPaymentMethods(array $methods)
     {
         foreach ($methods as $method) {

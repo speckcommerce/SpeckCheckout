@@ -3,9 +3,13 @@
 namespace SpeckCheckout\Strategy\Step;
 
 use SpeckCheckout\Strategy\AbstractCheckoutStrategy;
+use Zend\EventManager\EventManagerAwareTrait;
+use Zend\EventManager\EventManagerAwareInterface;
 
-abstract class AbstractStep
+abstract class AbstractStep implements EventManagerAwareInterface
 {
+    use EventManagerAwareTrait;
+
     protected $strategy;
 
     protected $complete = false;
@@ -14,11 +18,12 @@ abstract class AbstractStep
 
     public function setComplete($complete)
     {
+        $this->getEventManager()->trigger(__FUNCTION__, $this, array('complete' => $complete));
+
         // these 2 lines are REALLY hacky, figure out whats going on with multisite + this module
         $this->__sleep();
         $this->getStrategy()->__destruct();
 
-        $this->getEventManager()->trigger(__FUNCTION__, $this, array('complete' => $complete));
         $this->complete = $complete;
 
         return $this;
@@ -43,27 +48,5 @@ abstract class AbstractStep
     public function __sleep()
     {
         return array('complete');
-    }
-
-    /**
-     * @return eventManager
-     */
-    public function getEventManager()
-    {
-        if (null === $this->getEventManager()) {
-            $this->eventManager = $this->getStrategy()->getServiceLocator()->get('EventManager');
-        }
-
-        return $this->eventManager;
-    }
-
-    /**
-     * @param $eventManager
-     * @return self
-     */
-    public function setEventManager($eventManager)
-    {
-        $this->eventManager = $eventManager;
-        return $this;
     }
 }

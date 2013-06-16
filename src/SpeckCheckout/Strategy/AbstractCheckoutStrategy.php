@@ -6,12 +6,11 @@ use SpeckAddress\Entity\Address;
 use SpeckCheckout\Entity\Order;
 use Zend\Session\Container;
 use Zend\Stdlib\SplQueue;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorAwareTrait;
+use Zend\EventManager\EventManagerAwareTrait;
 
-abstract class AbstractCheckoutStrategy implements ServiceLocatorAwareInterface
+abstract class AbstractCheckoutStrategy
 {
-    use ServiceLocatorAwareTrait;
+    use EventManagerAwareTrait;
 
     /**
      * @var SplQueue[Step]
