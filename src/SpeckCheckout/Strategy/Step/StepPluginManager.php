@@ -8,6 +8,13 @@ use Zend\ServiceManager\ConfigInterface;
 
 class StepPluginManager extends AbstractPluginManager
 {
+    protected $invokableClasses = array(
+        'userinfo'     => 'SpeckCheckout\Strategy\Step\UserInformation',
+        'processorder' => 'SpeckCheckout\Strategy\Step\ProcessOrder',
+        'paymentinfo'  => 'SpeckCheckout\Strategy\Step\PaymentInformation',
+        'revieworder'  => 'SpeckCheckout\Strategy\Step\OrderReview',
+    );
+
     public function __construct(ConfigInterface $configuration = null)
     {
         parent::__construct($configuration);

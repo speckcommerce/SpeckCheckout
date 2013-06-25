@@ -3,10 +3,10 @@ return array(
     'speck-checkout' => array(
         'strategy' => 'SpeckCheckout\Strategy\BasicCheckoutStrategy',
         'steps' => array(
-            'SpeckCheckout\Strategy\Step\UserInformation',
-            'SpeckCheckout\Strategy\Step\PaymentInformation',
-            'SpeckCheckout\Strategy\Step\OrderReview',
-            'SpeckCheckout\Strategy\Step\ProcessOrder',
+            'userinfo',
+            'paymentinfo',
+            'revieworder',
+            'processorder',
         ),
         'payment_methods' => array(
             'check' => 'SpeckCheckout\PaymentMethod\Check',
