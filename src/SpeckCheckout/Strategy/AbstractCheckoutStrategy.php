@@ -6,9 +6,12 @@ use SpeckAddress\Entity\Address;
 use SpeckCheckout\Entity\Order;
 use Zend\Session\Container;
 use Zend\Stdlib\SplQueue;
+use Zend\EventManager\EventManagerAwareTrait;
 
 abstract class AbstractCheckoutStrategy
 {
+    use EventManagerAwareTrait;
+
     /**
      * @var SplQueue[Step]
      */

@@ -28,20 +28,21 @@ class UserInformationController extends AbstractActionController
             );
         }
 
-        $zfcuser  = $form->get('zfcuser')->setData($prg['zfcuser']);
         $shipping = $form->get('shipping')->setData($prg['shipping']);
         $billing  = $form->get('billing')->setData($prg['billing']);
+        $zfcuser  = $form->get('zfcuser')->setData($prg['zfcuser']);
 
-        $valid1 = $zfcuser->isValid();
-        $valid2 = $shipping->isValid();
-        $valid3 = $billing->isValid();
+        $eventData = array('form' => $form, 'prg' => $prg);
+        $responses = $this->getEventManager()->trigger(
+            __FUNCTION__ . '.validate', $this, $eventData
+        );
+        foreach($responses as $response) {
+            $prg = isset($response['prg']) ? $response['prg'] : $prg;
+        }
 
-        $valid = $valid1 && $valid2 && $valid3;
-
+        $valid = ($shipping->isValid() && $billing->isValid() && $zfcuser->isValid());
         if (!$valid) {
-            return array(
-                'form' => $form,
-            );
+            return array('form' => $form);
         }
 
         $user = $this->getServiceLocator()->get('zfcuser_user_service')->register($zfcuser->getData());
@@ -64,14 +65,14 @@ class UserInformationController extends AbstractActionController
             }
         }
 
-        $post['identity'] = $user->getEmail();
+        $post['identity']   = $user->getEmail();
         $post['credential'] = $prg['zfcuser']['password'];
-        $post['redirect'] = $this->url()->fromRoute('checkout');
+        $post['redirect']   = $this->url()->fromRoute('checkout');
 
         $this->getRequest()->setPost(new Parameters($post));
 
         return $this->forward()->dispatch('zfcuser', array(
-            'action'   => 'authenticate',
+            'action' => 'authenticate',
         ));
     }
 
@@ -92,25 +93,26 @@ class UserInformationController extends AbstractActionController
         }
 
         $shippingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
-        $shippingAddressForm->setName('shipping')
+        $shippingAddressForm->setName('shipping')->setWrapElements(true)
             ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
 
         $billingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
-        $billingAddressForm->setName('billing')
+        $billingAddressForm->setName('billing')->setWrapElements(true)
             ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
 
         $form = new \Zend\Form\Form;
 
         $form->add($shippingAddressForm)
-            ->add($billingAddressForm);
+             ->add($billingAddressForm);
 
         $checkoutService = $this->getServiceLocator()->get('SpeckCheckout\Service\Checkout');
 
         if ($prg === false) {
+
             $strategy = $checkoutService->getCheckoutStrategy();
             $return = array(
-                'addresses'    => $addressesArray,
-                'form'         => $form,
+                'addresses' => $addressesArray,
+                'form'      => $form,
             );
             if ($strategy->getShippingAddress()) {
                 $return['ship_prefill'] = $strategy->getShippingAddress()->getAddressId();
@@ -121,19 +123,28 @@ class UserInformationController extends AbstractActionController
             return $return;
         }
 
-        $shippingAddressId = isset($prg['shipping_address_id']) ? $prg['shipping_address_id'] : 0;
-        $billingAddressId = isset($prg['billing_address_id']) ? $prg['billing_address_id'] : 0;
-
         $shipping = $form->get('shipping');
-        $billing = $form->get('billing');
+        $billing  = $form->get('billing');
 
         $shipping->setData(isset($prg['shipping']) ? $prg['shipping'] : array());
-        $billing->setData(isset($prg['billing']) ? $prg['billing'] : array());
+        $billing->setData(isset($prg['billing'])   ? $prg['billing']  : array());
+
+        $eventData = array('form' => $form, 'prg' => $prg);
+        $responses = $this->getEventManager()->trigger(
+            __FUNCTION__ . '.validate', $this, $eventData
+        );
+        foreach($responses as $response) {
+            $prg = isset($response['prg']) ? $response['prg'] : $prg;
+        }
+
+
+        $shippingAddressId = isset($prg['shipping_address_id']) ? $prg['shipping_address_id'] : 0;
+        $billingAddressId  = isset($prg['billing_address_id'])  ? $prg['billing_address_id']  : 0;
+
 
         $valid1 = ($shippingAddressId != 0) ? true : $shipping->isValid();
-        $valid2 = ($billingAddressId != 0) ? true : $billing->isValid();
-
-        $valid = $valid1 && $valid2;
+        $valid2 = ($billingAddressId  != 0) ? true : $billing->isValid();
+        $valid  = $valid1 && $valid2;
 
         if (!$valid) {
             return array(
@@ -144,7 +155,7 @@ class UserInformationController extends AbstractActionController
             );
         }
 
-        $addressService = $this->getServiceLocator()->get('SpeckAddress\Service\Address');
+        $addressService     = $this->getServiceLocator()->get('SpeckAddress\Service\Address');
         $userAddressService = $this->getServiceLocator()->get('SpeckUserAddress\Service\UserAddress');
 
         $user = $this->zfcUserAuthentication()->getIdentity();
@@ -179,15 +190,15 @@ class UserInformationController extends AbstractActionController
     public function getRegisterForm()
     {
         $userForm = $this->getServiceLocator()->get('zfcuser_register_form');
-        $userForm->setName('zfcuser');
+        $userForm->setName('zfcuser')->setWrapElements(true);
         $userForm->remove('submit');
 
         $shippingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
-        $shippingAddressForm->setName('shipping')
+        $shippingAddressForm->setName('shipping')->setWrapElements(true)
             ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
 
         $billingAddressForm = $this->getServiceLocator()->get('SpeckAddress\Form\Address');
-        $billingAddressForm->setName('billing')
+        $billingAddressForm->setName('billing')->setWrapElements(true)
             ->setInputFilter($this->getServiceLocator()->get('SpeckAddress\Form\AddressFilter'));
 
         $form = new \Zend\Form\Form;

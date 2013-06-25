@@ -1,12 +1,13 @@
 <?php
 return array(
     'speck-checkout' => array(
-        'strategy' => new \SpeckCheckout\Strategy\BasicCheckoutStrategy(array(
-            new \SpeckCheckout\Strategy\Step\UserInformation,
-            new \SpeckCheckout\Strategy\Step\PaymentInformation,
-            new \SpeckCheckout\Strategy\Step\OrderReview,
-            new \SpeckCheckout\Strategy\Step\ProcessOrder,
-        )),
+        'strategy' => 'SpeckCheckout\Strategy\BasicCheckoutStrategy',
+        'steps' => array(
+            'userinfo',
+            'paymentinfo',
+            'revieworder',
+            'processorder',
+        ),
         'payment_methods' => array(
             'check' => 'SpeckCheckout\PaymentMethod\Check',
             'fax'   => 'SpeckCheckout\PaymentMethod\Fax',
@@ -15,7 +16,6 @@ return array(
             'quote' => 'SpeckCheckout\PaymentMethod\Quote',
         ),
     ),
-
     'controllers' => array(
         'invokables' => array(
             'checkout'         => 'SpeckCheckout\Controller\CheckoutController',

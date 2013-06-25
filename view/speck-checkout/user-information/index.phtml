@@ -1,3 +1,4 @@
+<? $this->headScript()->appendFile('/js/country-provinces.js'); ?>
 <?php
 echo $this->zfcUserLoginWidget(array(
     'redirect' => $this->url('checkout/user-information/addresses')
@@ -62,4 +63,17 @@ $billingForm = $form->get('billing');
         'alternative-spellings-attr': 'alt-spelling'
     });
 })();
+
+$(document).ready(function(){
+    var jQuery = $;
+    countryProvinces(
+        $('form select[name="shipping[province]"]'),
+        $('form select[name="shipping[country]"]')
+    );
+    countryProvinces(
+        $('form select[name="billing[province]"]'),
+        $('form select[name="billing[country]"]')
+    );
+})
+
 </script>
