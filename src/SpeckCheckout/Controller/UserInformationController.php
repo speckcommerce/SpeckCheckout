@@ -5,11 +5,10 @@ namespace SpeckCheckout\Controller;
 use SpeckCheckout\Strategy\Step\UserInformation;
 
 use Zend\Http\PhpEnvironment\Response;
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Stdlib\Parameters;
 use Zend\View\Model\ViewModel;
 
-class UserInformationController extends AbstractActionController
+class UserInformationController extends AbstractCheckoutStageController
 {
     public function indexAction()
     {

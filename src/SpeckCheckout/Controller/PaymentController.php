@@ -5,10 +5,9 @@ namespace SpeckCheckout\Controller;
 use SpeckCheckout\Strategy\Step\PaymentInformation;
 
 use Zend\Http\PhpEnvironment\Response;
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class PaymentController extends AbstractActionController
+class PaymentController extends AbstractCheckoutStageController
 {
     public function indexAction()
     {

@@ -15,6 +15,7 @@ return array(
             'po'    => 'SpeckCheckout\PaymentMethod\PO',
             'quote' => 'SpeckCheckout\PaymentMethod\Quote',
         ),
+        'empty_cart_redirect_route' => 'cart',
     ),
     'controllers' => array(
         'invokables' => array(
