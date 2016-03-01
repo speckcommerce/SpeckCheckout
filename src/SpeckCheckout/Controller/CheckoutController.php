@@ -2,10 +2,9 @@
 
 namespace SpeckCheckout\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class CheckoutController extends AbstractActionController
+class CheckoutController extends AbstractCheckoutStageController
 {
     protected $checkoutService;
 
