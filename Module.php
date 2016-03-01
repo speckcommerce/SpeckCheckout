@@ -37,6 +37,7 @@ class Module implements AutoloaderProviderInterface
                 'SpeckCheckout\Options\CheckoutOptions' => function($sm) {
                     $config = $sm->get('application')->getConfig();
                     $options = new Options\CheckoutOptions();
+                    $options->setPaymentMethods($config['speck-checkout']['payment_methods']);
                     $options->setStrategy($sm->get('speck_checkout_strategy'));
                     return $options;
                 },
