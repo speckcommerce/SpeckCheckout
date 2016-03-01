@@ -13,6 +13,7 @@ class Module implements AutoloaderProviderInterface
         return array(
             'invokables' => array(
                 'speckcheckout_step_pluginmanager' => 'SpeckCheckout\Strategy\Step\StepPluginManager',
+                'speckcheckout_paymentmethod_pluginmanager' => 'SpeckCheckout\PaymentMethod\PaymentMethodPluginManager',
             ),
             'factories' => array(
                 'speck_checkout_strategy'          => function($sm) {
@@ -37,8 +38,15 @@ class Module implements AutoloaderProviderInterface
                 'SpeckCheckout\Options\CheckoutOptions' => function($sm) {
                     $config = $sm->get('application')->getConfig();
                     $options = new Options\CheckoutOptions();
-                    $options->setPaymentMethods($config['speck-checkout']['payment_methods']);
                     $options->setStrategy($sm->get('speck_checkout_strategy'));
+
+                    $paymentMethods = array();
+                    $paymentMethodPluginManager = $sm->get('speckcheckout_paymentmethod_pluginmanager');
+                    foreach ($config['speck-checkout']['payment_methods'] as $index => $paymentMethod) {
+                        $paymentMethods[$index] = $paymentMethodPluginManager->get($paymentMethod);
+                    }
+                    $options->setPaymentMethods($paymentMethods);
+
                     return $options;
                 },
             ),

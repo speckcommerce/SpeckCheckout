@@ -3,6 +3,8 @@
 namespace SpeckCheckout\Options;
 
 use Zend\Stdlib\AbstractOptions;
+use Zend\ServiceManager\Config;
+use SpeckCheckout\PaymentMethod\PaymentMethodPluginManager;
 
 class CheckoutOptions extends AbstractOptions
 {
@@ -31,14 +33,9 @@ class CheckoutOptions extends AbstractOptions
         return $this->paymentMethods;
     }
 
-    //todo: refactor to pluginmanager
-    public function setPaymentMethods(array $methods)
+    public function setPaymentMethods(array $paymentMethods)
     {
-        foreach ($methods as $method) {
-            $obj = new $method;
-            $this->paymentMethods[$obj->getPaymentMethod()] = $obj;
-        }
-
+        $this->paymentMethods = $paymentMethods;
         return $this;
     }
 }
