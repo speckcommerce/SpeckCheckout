@@ -16,14 +16,13 @@ class PaymentController extends AbstractCheckoutStageController
         $paymentMethods  = $options->getPaymentMethods();
 
         $paymentMethod = $checkoutService->getCheckoutStrategy()->getPaymentMethod();
-        $methodString = ($paymentMethod ? $paymentMethod->getPaymentMethod() : null );
 
         $methodForm = new \Zend\Form\Form;
         foreach ($paymentMethods as $i) {
             $valueOptions[$i->getPaymentMethod()] = array(
                 'value'    => $i->getPaymentMethod(),
                 'label'    => $i->getDisplayName(),
-                'selected' => ($i->getPaymentMethod() === $methodString),
+                'selected' => ($i->getPaymentMethod() === $paymentMethod),
             );
         }
 
